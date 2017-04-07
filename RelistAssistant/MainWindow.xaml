@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RelistAssistant"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Relist Assistant" Height="161.394" Width="465.884">
     <Grid>
-        
+        <Button x:Name="GenerateCSVButton" Content="Generate List" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="Button_Click" FontSize="18" RenderTransformOrigin="1.831,4.13"/>
+
     </Grid>
 </Window>
