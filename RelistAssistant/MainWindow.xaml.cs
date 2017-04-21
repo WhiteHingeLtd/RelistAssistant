@@ -45,22 +45,36 @@ namespace RelistAssistant
             newwatch.Reset();
             newwatch.Start();
             Parallel.ForEach(MainColl, sku =>
-            {
-                if (sku.PackSize == 1)
                 {
-                    if (sku.SKU.Contains("xxxx")) return;
-                    if (sku.Stock.Minimum < 3) return;
-                    if (sku.Stock.Level != 0) return;
-                    DataBag.Add(sku);
+                    Console.WriteLine(DataBag.Count);
+                    if (sku.Stock.Minimum < sku.Stock.Level) return;
+                    try
+                    {
+                        if (sku.EnvelopeObject.Name.Contains("No list")) return;
+                    }
+                    catch (Exception exception)
+                    {
+                        
+                    }
 
-                }
-                else
-                {
-                    if (!(sku.Stock.Minimum > sku.Stock.Level)) return;
+                    if (sku.Stock.Minimum < 3) return;
                     if (sku.SKU.Contains("xxxx")) return;
                     DataBag.Add(sku);
+                    //if (sku.PackSize == 1)
+                    //{
+
+                    //    if (sku.Stock.Minimum < 3) return;
+                    //    if (sku.Stock.Level != 0) return;
+                    //    DataBag.Add(sku);
+
+                    //}
+                    //else
+                    //{
+                    //    if (!(sku.Stock.Minimum > sku.Stock.Level)) return;
+                    //    if (sku.SKU.Contains("xxxx")) return;
+                    //    DataBag.Add(sku);
+                    //}
                 }
-            }
             );
             Console.WriteLine(newwatch.ElapsedMilliseconds.ToString());
             Console.WriteLine("Finished Parallel");
@@ -70,7 +84,7 @@ namespace RelistAssistant
             var csvbuilder = "Sku,Location,Title,Level,Minimum,Stock,Check" + Environment.NewLine;
             foreach (WhlSKU sku in Datalist)
             {
-                csvbuilder += sku.ShortSku + "," + sku.GetLocation(SKULocation.SKULocationType.Pickable).LocationText +","+sku.Title.Label + "," + sku.Stock.Level.ToString() + "," + sku.Stock.Minimum.ToString() + "," + sku.Stock.Total.ToString() + "," + Environment.NewLine;
+                csvbuilder += sku.SKU + "," + sku.GetLocation(SKULocation.SKULocationType.Pickable).LocationText +","+sku.Title.Label + "," + sku.Stock.Level.ToString() + "," + sku.Stock.Minimum.ToString() + "," + sku.Stock.Total.ToString() + "," + Environment.NewLine;
             }
             try
             {
