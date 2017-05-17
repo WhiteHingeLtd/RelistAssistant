@@ -50,7 +50,7 @@ namespace RelistAssistant
                     if (sku.Stock.Minimum < sku.Stock.Level) return;
                     try
                     {
-                        if (sku.EnvelopeObject.Name.Contains("No list")) return;
+                        if (sku.EnvelopeObject.Name.Contains("x No List")) return;
                     }
                     catch (Exception exception)
                     {
