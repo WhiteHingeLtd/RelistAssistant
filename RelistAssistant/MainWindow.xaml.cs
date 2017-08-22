@@ -43,9 +43,11 @@ namespace RelistAssistant
                     if (sku.NewItem.Status == "Dead") return;
                     try
                     {
-                        if (sku.EnvelopeObject.Name.Contains("Select")) return;
+                        if (sku.EnvelopeObject.Name.Contains("x No List")) return;
                     }
-                    catch (Exception){}
+                    catch (Exception)
+                    {
+                    }
 
                     if (sku.Stock.Minimum < 3) return;
                     if (sku.SKU.Contains("xxxx")) return;
