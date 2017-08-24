@@ -27,7 +27,11 @@
     <InstallUrl>http://apps.ad.whitehinge.com/AppPublish/RelistAssistant/</InstallUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
+<<<<<<< HEAD
     <ApplicationRevision>5</ApplicationRevision>
+=======
+    <ApplicationRevision>6</ApplicationRevision>
+>>>>>>> origin/master
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
