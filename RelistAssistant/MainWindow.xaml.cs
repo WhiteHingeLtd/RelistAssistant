@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using WHLClasses;
@@ -15,7 +16,7 @@ namespace RelistAssistant
     /// </summary>
     public partial class MainWindow : Window
     {
-        public SkuCollection MainColl = new SkuCollection();
+        public SkuCollection MainColl;
         public MainWindow()
         {
             InitializeComponent();
@@ -32,6 +33,7 @@ namespace RelistAssistant
         {
             var DataBag = new ConcurrentBag<WhlSKU>();
             var Datalist = new List<WhlSKU>();
+            var noPickingLocations = new ConcurrentBag<WhlSKU>();
             var newwatch = new Stopwatch();
             newwatch.Reset();
             newwatch.Start();
@@ -45,8 +47,9 @@ namespace RelistAssistant
                     {
                         if (sku.EnvelopeObject.Name.Contains("x No List")) return;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        //
                     }
 
                     if (sku.Stock.Minimum < 3) return;
@@ -60,6 +63,12 @@ namespace RelistAssistant
                         Console.WriteLine(exception);
                         WHLClasses.Reporting.ErrorReporting.ReportException(exception);
                     }
+
+                    if (sku.Locations.Count > 0 & sku.Locations.All(x => x.LocationType != SKULocation.SKULocationType.Pickable))
+                    {
+                        noPickingLocations.Add(sku);
+                        return;
+                    }
                     if(sku.Locations.Count != 0) DataBag.Add(sku);
 
                 }
@@ -68,11 +77,20 @@ namespace RelistAssistant
             Console.WriteLine("Finished Parallel");
             Console.WriteLine(DataBag.Count);
             Datalist.AddRange(DataBag);
-            Datalist.Sort((x,y) => x.GetLocation(SKULocation.SKULocationType.Pickable).LocationID.CompareTo(y.GetLocation(SKULocation.SKULocationType.Pickable).LocationID));
+            Datalist.Sort((x,y) => x.GetLocation(SKULocation.SKULocationType.Pickable).RouteIndex.CompareTo(y.GetLocation(SKULocation.SKULocationType.Pickable).RouteIndex));
             var csvbuilder = "Sku,Location,Title,Level,Minimum,Stock,Check" + Environment.NewLine;
+            var tempList = new List<WhlSKU>();
+            tempList.AddRange(noPickingLocations);
+            tempList.Sort((x,y) => x.Locations.First().RouteIndex.CompareTo(y.Locations.First().RouteIndex));
             foreach (var sku in Datalist)
             {
                 csvbuilder += sku.SKU + "," + sku.GetLocation(SKULocation.SKULocationType.Pickable).LocationText +","+sku.Title.Label + "," + sku.Stock.Level.ToString() + "," + sku.Stock.Minimum.ToString() + "," + sku.Stock.Total.ToString() + "," + Environment.NewLine;
+            }
+            foreach (var sku in tempList)
+            {
+                csvbuilder +=
+                    $"{sku.SKU},NoPickingLocation,{sku.Title.Label},{sku.Stock.Level},{sku.Stock.Minimum},{sku.Stock.Total}," +
+                    Environment.NewLine;
             }
             try
             {
